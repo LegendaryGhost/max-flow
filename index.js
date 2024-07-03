@@ -264,5 +264,7 @@ document.addEventListener('click', () => {
     serverMenu.style.display = 'none';
 });
 
+// Intializing
+network.initialize();
 dns.updateRecords();
 network.draw(canvas, context);

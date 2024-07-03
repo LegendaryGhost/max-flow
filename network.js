@@ -4,7 +4,9 @@ class Network {
     selectedServer = null;
     linkingMode = false;
 
-    constructor() {
+    constructor() {}
+
+    initialize() {
         this.servers = [
             new Server(50, 50, 'A', []),
             new Server(30, 500, '1', ['facebook.com']),
@@ -12,12 +14,12 @@ class Network {
             new Server(200, 300, '3', []),
             new Server(400, 300, 'W', ['facebook.com'])
         ]
-        this.addConnection(this.servers[0], this.servers[3], 10, 0, 'forward');
-        this.addConnection(this.servers[0], this.servers[2], 7, 0, 'forward');
-        this.addConnection(this.servers[0], this.servers[4], 69, 0, 'forward');
+        this.addConnection(this.servers[0], this.servers[3], 10, 3, 'forward');
+        this.addConnection(this.servers[0], this.servers[2], 7, 1, 'forward');
+        this.addConnection(this.servers[0], this.servers[4], 69, 10, 'forward');
         this.addConnection(this.servers[1], this.servers[3], 11, 0, 'forward');
-        this.addConnection(this.servers[3], this.servers[4], 6, 0, 'forward');
-        this.addConnection(this.servers[2], this.servers[4], 4, 0, 'forward');
+        this.addConnection(this.servers[3], this.servers[4], 6, 3, 'forward');
+        this.addConnection(this.servers[2], this.servers[4], 4, 1, 'forward');
     }
 
     draw(canvas, context, clientX, clientY) {
@@ -77,16 +79,16 @@ class Network {
         // Draw the capacity
         this.drawString(
             connection.capacity,
-            x1 + (x2 - x1) / 2 - 15,
-            y1 + (y2 - y1) / 2 - 15,
+            x1 + (x2 - x1) / 2 + 15,
+            y1 + (y2 - y1) / 2 + 15,
             'red'
         );
 
         // Draw the flow
         this.drawString(
             connection.flow,
-            x1 + (x2 - x1) / 2 + 15,
-            y1 + (y2 - y1) / 2 + 15,
+            x1 + (x2 - x1) / 2 - 15,
+            y1 + (y2 - y1) / 2 - 15,
             '#00FF00'
         );
 
@@ -127,12 +129,36 @@ class Network {
                 !(connection.server1.getName() === server1.getName() && connection.server2.getName() === server2.getName()) &&
                 !(connection.server1.getName() === server2.getName() && connection.server2.getName() === server1.getName())
         );
+        
+        this.addConnectionWithoutCheck(server1, server2, capacity, flow, orientation);
+    }
+
+    addConnectionWithoutCheck(server1, server2, capacity, flow, orientation) {
         this.connections.push(new Connection(server1, server2, capacity, flow, orientation));
 
         server1.neighbours = server1.neighbours.filter(server => server.getName() !== server2.getName());
         server1.neighbours.push(server2);
         server2.neighbours = server2.neighbours.filter(server => server.getName() !== server1.getName());
         server2.neighbours.push(server1);
+    }
+
+    generateResidualGraph(sourceName, wellName) {
+        const residualGraph = new Network();
+        for (const server of this.servers) {
+            residualGraph.addServer(server);
+        }
+        for (const connection of this.connections) {
+            const forwardCapacity = connection.capacity - connection.flow;
+            if (forwardCapacity !== 0) {
+                residualGraph.addConnectionWithoutCheck(connection.server1, connection.server2, forwardCapacity);
+            }
+            if (connection.flow !== 0) {
+                residualGraph.addConnectionWithoutCheck(connection.server2, connection.server1, connection.flow);
+            }
+        }
+        // const source = residualGraph.servers.filter(server => server.name === sourceName);
+        // const well = residualGraph.servers.filter(server => server.name === wellName);
+        return residualGraph;
     }
 
     dijkstra(senderIp, receiverIp) {

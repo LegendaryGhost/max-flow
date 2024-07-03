@@ -48,4 +48,7 @@ Test a personal implementation of the Dijkstra's path finding algorithm
   - [x] Draw arrows
   - [x] Connection class
   - [x] Orientation attribute
-- [ ] Change the IP address into a name
+- [x] Change the IP address into a name
+- [x] Residual graph
+  - [x] Copy the graph's nodes
+  - [x] Generate the residual connections

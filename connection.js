@@ -7,7 +7,7 @@ class Connection {
     orientation;
     flow;
 
-    constructor(server1, server2, capacity, flow = 0, orientation = 'both', highlighted = false, bfsHighlighted = false) {
+    constructor(server1, server2, capacity, flow = 0, orientation = 'forward', highlighted = false, bfsHighlighted = false) {
         this.server1 = server1;
         this.server2 = server2;
         this.capacity = capacity;
