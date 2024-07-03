@@ -3,17 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NetSim</title>
+    <title>Max flow</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="pop-up-background"></div>
     <form action="#" method="get" id="add-server-form" class="pop-up">
-        <label for="ip-1">Adresse IP :</label><br>
-        <input type="number" name="ip-1" id="ip-1" value="127" min="1" max="255">
-        <input type="number" name="ip-2" id="ip-2" value="0" min="0" max="255">
-        <input type="number" name="ip-3" id="ip-3" value="0" min="0" max="255">
-        <input type="number" name="ip-4" id="ip-4" value="1" min="0" max="255"><br>
+        <label for="name">Nom :</label><br>
+        <input type="text" name="name" id="name" value="A"><br>
         <label for="websites">Sites web</label><br>
         <textarea name="websites" id="websites" placeholder="facebook.com;youtube.com" cols="40" rows="10"></textarea><br>
         <button type="submit">Créer</button>

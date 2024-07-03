@@ -2,7 +2,7 @@ class Server {
     posX;
     posY;
     distance;
-    ipAddress;
+    name;
     websites;
     selected = false;
     disabled = false;
@@ -12,10 +12,10 @@ class Server {
     highlighted = false;
     bfsHighlighted = false;
 
-    constructor(posX, posY, ipAddress, websites) {
+    constructor(posX, posY, name, websites) {
         this.posX = posX;
         this.posY = posY;
-        this.ipAddress = ipAddress;
+        this.name = name;
         this.websites = websites;
     }
 
@@ -23,8 +23,8 @@ class Server {
         return 25;
     }
 
-    getIpString() {
-        return this.ipAddress.join('.');
+    getName() {
+        return this.name;
     }
 
     draw(context) {
@@ -51,13 +51,13 @@ class Server {
         context.stroke(circle); // Stroke the circle
 
         // Set the font properties
-        context.font = '15px Arial';
+        context.font = '24px Arial';
         context.fillStyle = 'black';
 
         // Draw the text
         context.fillText(
-            this.ipAddress[0] + '.' + this.ipAddress[1] + '.' + this.ipAddress[2] + '.' + this.ipAddress[3],
-            this.posX - Server.radius,
+            this.name,
+            this.posX,
             this.posY + 2 * Server.radius
         );
     }

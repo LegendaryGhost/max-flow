@@ -6,11 +6,11 @@ class Network {
 
     constructor() {
         this.servers = [
-            new Server(50, 50, [127, 0, 0, 1], []),
-            new Server(30, 500, [127, 0, 0, 2], ['facebook.com']),
-            new Server(400, 30, [127, 0, 0, 3], []),
-            new Server(200, 300, [127, 0, 0, 4], []),
-            new Server(400, 300, [127, 0, 0, 5], ['facebook.com'])
+            new Server(50, 50, 'A', []),
+            new Server(30, 500, '1', ['facebook.com']),
+            new Server(400, 30, '2', []),
+            new Server(200, 300, '3', []),
+            new Server(400, 300, 'W', ['facebook.com'])
         ]
         this.addConnection(this.servers[0], this.servers[3], 10, 0, 'forward');
         this.addConnection(this.servers[0], this.servers[2], 7, 0, 'forward');
@@ -110,34 +110,34 @@ class Network {
     }
 
     deleteServer(deletedServer) {
-        const deletedIp = deletedServer.getIpString();
-        this.servers = this.servers.filter(server => server.ipAddress.join('.') !== deletedIp);
+        const deletedIp = deletedServer.getName();
+        this.servers = this.servers.filter(server => server.name !== deletedIp);
         this.servers.forEach(
             server => server.neighbours = server.neighbours.filter(
-                neighbour => neighbour.getIpString() !== deletedIp
+                neighbour => neighbour.getName() !== deletedIp
             )
         );
-        this.connections = this.connections.filter(connection => connection.server1.getIpString() !== deletedIp && connection.server2.getIpString() !== deletedIp)
-        this.selectedServer = this.selectedServer.getIpString() === deletedIp ? null : this.selectedServer;
+        this.connections = this.connections.filter(connection => connection.server1.getName() !== deletedIp && connection.server2.getName() !== deletedIp)
+        this.selectedServer = this.selectedServer.getName() === deletedIp ? null : this.selectedServer;
     }
 
     addConnection(server1, server2, capacity, flow, orientation) {
         this.connections = this.connections.filter(
             connection =>
-                !(connection.server1.getIpString() === server1.getIpString() && connection.server2.getIpString() === server2.getIpString()) &&
-                !(connection.server1.getIpString() === server2.getIpString() && connection.server2.getIpString() === server1.getIpString())
+                !(connection.server1.getName() === server1.getName() && connection.server2.getName() === server2.getName()) &&
+                !(connection.server1.getName() === server2.getName() && connection.server2.getName() === server1.getName())
         );
         this.connections.push(new Connection(server1, server2, capacity, flow, orientation));
 
-        server1.neighbours = server1.neighbours.filter(server => server.getIpString() !== server2.getIpString());
+        server1.neighbours = server1.neighbours.filter(server => server.getName() !== server2.getName());
         server1.neighbours.push(server2);
-        server2.neighbours = server2.neighbours.filter(server => server.getIpString() !== server1.getIpString());
+        server2.neighbours = server2.neighbours.filter(server => server.getName() !== server1.getName());
         server2.neighbours.push(server1);
     }
 
     dijkstra(senderIp, receiverIp) {
-        const senderServer = this.servers.find(server => server.ipAddress.join('.') === senderIp);
-        const receiverServer = this.servers.find(server => server.ipAddress.join('.') === receiverIp);
+        const senderServer = this.servers.find(server => server.name === senderIp);
+        const receiverServer = this.servers.find(server => server.name === receiverIp);
         let currentServer = senderServer;
 
         this.servers.forEach(server => {
@@ -148,14 +148,14 @@ class Network {
         senderServer.distance = 0;
 
         while (currentServer) {
-            const currentIp = currentServer.ipAddress.join('.');
+            const currentIp = currentServer.name;
             currentServer.colored = true;
             currentServer.neighbours.forEach(neighbour => {
-                const neighbourIp = neighbour.ipAddress.join('.');
+                const neighbourIp = neighbour.name;
                 const connection = this.connections.find(
                     connection =>
-                        (connection.server1.ipAddress.join('.') === currentIp && connection.server2.ipAddress.join('.') === neighbourIp) ||
-                        (connection.server1.ipAddress.join('.') === neighbourIp && connection.server2.ipAddress.join('.') === currentIp)
+                        (connection.server1.name === currentIp && connection.server2.name === neighbourIp) ||
+                        (connection.server1.name === neighbourIp && connection.server2.name === currentIp)
                 );
                 const distance = currentServer.distance + connection.capacity;
                 if (!neighbour.colored && !neighbour.disabled && distance < neighbour.distance) {
@@ -187,8 +187,8 @@ class Network {
     }
 
     bfs(senderIp, receiverIp) {
-        const senderServer = this.servers.find(server => server.ipAddress.join('.') === senderIp);
-        const receiverServer = this.servers.find(server => server.ipAddress.join('.') === receiverIp);
+        const senderServer = this.servers.find(server => server.name === senderIp);
+        const receiverServer = this.servers.find(server => server.name === receiverIp);
 
         this.servers.forEach(server => {
             server.colored = false;
@@ -253,8 +253,8 @@ class Network {
             const server2 = path[i + 1];
             const connection = this.connections.find(
                 connection =>
-                    connection.server1.getIpString() === server1.getIpString() && connection.server2.getIpString() === server2.getIpString() ||
-                    connection.server1.getIpString() === server2.getIpString() && connection.server2.getIpString() === server1.getIpString()
+                    connection.server1.getName() === server1.getName() && connection.server2.getName() === server2.getName() ||
+                    connection.server1.getName() === server2.getName() && connection.server2.getName() === server1.getName()
             );
             if (connection) {
                 if (bfsHighlight) {

@@ -9,7 +9,7 @@ Test a personal implementation of the Dijkstra's path finding algorithm
 
 ## Project progression
 
-- [ ] Map manipulation
+- [x] Map manipulation
   - [x] Server creation (x coordinate, y coordinate,Ip address, website list)
     - [x] Server class
     - [x] Draw the servers
@@ -48,3 +48,4 @@ Test a personal implementation of the Dijkstra's path finding algorithm
   - [x] Draw arrows
   - [x] Connection class
   - [x] Orientation attribute
+- [ ] Change the IP address into a name

@@ -28,7 +28,7 @@ const selectServer = server => {
     }
     server.selected = true;
     network.selectedServer = server;
-    selectedServerForm.querySelector('#selected-ip').textContent = server.ipAddress.join('.');
+    selectedServerForm.querySelector('#selected-ip').textContent = server.name;
     selectedServerForm.querySelector('#selected-websites').value = server.websites.join(';');
     selectedServerForm.querySelector('#selected-disable').textContent = server.disabled ? 'Rallumer' : 'Eteindre';
     network.draw(canvas, context);
@@ -44,13 +44,8 @@ addServerForm.addEventListener('submit', event => {
     event.preventDefault();
     const {x, y} = getCanvasRelativeCoordinate(parseInt(addServerMenu.style.left), parseInt(addServerMenu.style.top));
     const formData = new FormData(event.target);
-    const ipAddress = [
-        formData.get('ip-1'),
-        formData.get('ip-2'),
-        formData.get('ip-3'),
-        formData.get('ip-4')
-    ];
-    const sameIpServer = network.servers.find(server => server.ipAddress.join('.') === ipAddress.join('.'));
+    const name = formData.get('name');
+    const sameNameServer = network.servers.find(server => server.name === name);
     let websitesArray = [...new Set(formData.get('websites').split(';'))];
     // Check if the resulting array contains only an empty string
     if (websitesArray.length === 1 && websitesArray[0] === '') {
@@ -59,12 +54,12 @@ addServerForm.addEventListener('submit', event => {
     }
     websitesArray = websitesArray.map(website => website.trim());
 
-    if (sameIpServer) {
-        alert(`L'adresse IP ${ipAddress.join('.')} est déjà utilisée`);
+    if (sameNameServer) {
+        alert(`L'adresse IP ${name} est déjà utilisée`);
         return;
     }
 
-    network.addServer(new Server(x, y, ipAddress, websitesArray));
+    network.addServer(new Server(x, y, name, websitesArray));
     network.draw(canvas, context);
     dns.updateRecords();
     addServerForm.reset();
@@ -132,7 +127,7 @@ urlSearchForm.addEventListener('submit', event => {
     }
 
     const url = (new FormData(event.target)).get('url').toString();
-    const senderIp = network.selectedServer.ipAddress.join('.');
+    const senderIp = network.selectedServer.name;
     let receiverIps;
 
     try {
@@ -222,7 +217,7 @@ canvas.addEventListener('click', event => {
     }
 
     if(network.linkingMode) {
-        if (clickedServer && clickedServer.ipAddress.join('.') !== network.selectedServer.ipAddress.join('.')) {
+        if (clickedServer && clickedServer.name !== network.selectedServer.name) {
             toLinkServer = clickedServer;
             popUpBackground.style.display = 'block';
             linkingForm.style.display = 'block';

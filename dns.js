@@ -12,13 +12,13 @@ class DNS {
         for (const server of network.servers) {
             for (const domain of server.websites) {
                 const record = this.records.find(record => record.domain === domain)
-                const ipAddress = server.ipAddress.join('.');
+                const name = server.name;
                 if (record) {
-                    record.ipAddresses.push(ipAddress);
+                    record.names.push(name);
                 } else {
                     this.records.push({
                         'domain': domain,
-                        'ipAddresses': [ipAddress]
+                        'names': [name]
                     });
                 }
             }
@@ -28,7 +28,7 @@ class DNS {
     resolve(domain) {
         const record = this.records.find(record => record.domain === domain);
         if (record) {
-            return record.ipAddresses;
+            return record.names;
         } else {
             throw new Error(`Erreur 404, url introuvable : '${domain}'`);
         }
