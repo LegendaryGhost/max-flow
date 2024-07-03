@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetSim</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="pop-up-background"></div>
+    <form action="#" method="get" id="add-server-form" class="pop-up">
+        <label for="ip-1">Adresse IP :</label><br>
+        <input type="number" name="ip-1" id="ip-1" value="127" min="1" max="255">
+        <input type="number" name="ip-2" id="ip-2" value="0" min="0" max="255">
+        <input type="number" name="ip-3" id="ip-3" value="0" min="0" max="255">
+        <input type="number" name="ip-4" id="ip-4" value="1" min="0" max="255"><br>
+        <label for="websites">Sites web</label><br>
+        <textarea name="websites" id="websites" placeholder="facebook.com;youtube.com" cols="40" rows="10"></textarea><br>
+        <button type="submit">Créer</button>
+        <button type="reset">Annuler</button>
+    </form>
+    <form action="#" method="get" id="linking-form" class="pop-up">
+        <label for="latency">Latence :</label><br>
+        <input type="number" name="latency" id="latency" value="1" min="1"><br>
+        <button type="submit">Lier</button>
+        <button type="reset">Annuler</button>
+    </form>
+    <menu id="add-server-context">
+        <button type="button">Créer un serveur</button>
+    </menu>
+    <menu id="server-context">
+        <button type="button" id="link-server">Etablir une liaison</button>
+    </menu>
+    <main>
+        <aside>
+            <form action="#" method="get" id="selected-server-form">
+                <h1>Serveur sélectionné</h1>
+                <p>Adresse IP : <span id="selected-ip">0.0.0.0</span></p>
+                <label for="selected-websites">Sites web :</label><br>
+                <textarea name="selected-websites" id="selected-websites" cols="40" rows="10"></textarea><br>
+                <button type="submit">Sauvegarder</button>
+                <button type="submit" id="selected-disable">Eteindre</button>
+                <button type="reset">Supprimer</button>
+            </form>
+            <hr>
+            <form id="url-search-form">
+                <label for="url">URL :</label><br>
+                <input type="text" name="url" id="url"><br>
+                <button type="submit">Rechercher</button>
+            </form>
+        </aside>
+        <section>
+            <canvas id="network" width="800" height="600"></canvas>
+        </section>
+    </main>
+    <script src="network.js" defer></script>
+    <script src="server.js" defer></script>
+    <script src="dns.js" defer></script>
+    <script src="index.js" defer></script>
+</body>
+</html>

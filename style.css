@@ -1,0 +1,101 @@
+body {
+    min-width: 100vw;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+    font-family: sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+form label, form input, form textarea {
+    display: inline-block;
+    margin-bottom: .5rem;
+}
+
+main {
+    display: flex;
+    gap: 1rem;
+    padding: 2rem;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+aside {
+    background-color: lightgrey;
+    padding: 2rem;
+    border-radius: 1rem;
+}
+
+canvas {
+    border-radius: 1rem;
+}
+
+button {
+    padding: .5rem 1rem;
+    border-radius: 2rem;
+    border: lightgrey;
+    cursor: pointer;
+    box-shadow: darkgray 3px 3px 7px;
+}
+
+button:active {
+    transform: translate(3px, 3px);
+    box-shadow: darkgray 0 0 7px;
+}
+
+input, textarea {
+    padding: .5rem 1rem;
+    border-radius: 2rem;
+    border: black 1px solid;
+}
+
+textarea {
+    border-radius: .5rem;
+}
+
+menu button {
+    box-shadow: none;
+}
+
+.pop-up {
+    text-align: center;
+}
+
+#pop-up-background, #add-server-form, #add-server-context, #server-context, #linking-form {
+    position: absolute;
+    display: none;
+}
+
+#pop-up-background {
+    background-color: black;
+    opacity: .8;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+}
+
+#add-server-form, #linking-form {
+    background-color: white;
+    padding: 10px;
+    border-radius: 10px;
+    z-index: 101;
+}
+
+#add-server-context, #server-context {
+    margin: 0;
+    padding: 0;
+    top: 0;
+    left: 0;
+}
+
+@media screen and (max-width: 900px) {
+    main {
+        flex-direction: column;
+    }
+}
