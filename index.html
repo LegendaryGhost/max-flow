@@ -20,8 +20,14 @@
         <button type="reset">Annuler</button>
     </form>
     <form action="#" method="get" id="linking-form" class="pop-up">
-        <label for="latency">Latence :</label><br>
-        <input type="number" name="latency" id="latency" value="1" min="1"><br>
+        <label for="capacity">Capacité :</label><br>
+        <input type="number" name="capacity" id="capacity" value="1" min="1"><br>
+        <label for="orientation">Orientation</label><br>
+        <select name="orientation" id="orientation">
+            <option value="forward" selected>Avant</option>
+            <option value="backward">Arrière</option>
+            <option value="both">Double sens</option>
+        </select><br>
         <button type="submit">Lier</button>
         <button type="reset">Annuler</button>
     </form>
@@ -55,6 +61,7 @@
     </main>
     <script src="network.js" defer></script>
     <script src="server.js" defer></script>
+    <script src="connection.js" defer></script>
     <script src="dns.js" defer></script>
     <script src="index.js" defer></script>
 </body>

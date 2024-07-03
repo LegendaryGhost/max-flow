@@ -21,7 +21,7 @@ Test a personal implementation of the Dijkstra's path finding algorithm
     - [x] Select server
     - [x] Save changes made on a server
   - [x] Server suppression
-  - [x] Link creation between servers with latency duration
+  - [x] Link creation between servers with capacity duration
     - [x] Server context menu
     - [x] Linking mode
     - [x] Linking form
@@ -44,7 +44,7 @@ Test a personal implementation of the Dijkstra's path finding algorithm
 
 # Maximum flow
 
-- [ ] Make the graph oriented
+- [x] Make the graph oriented
   - [x] Draw arrows
-  - [ ] Connection class
-  - [ ] Orientation attribute
+  - [x] Connection class
+  - [x] Orientation attribute

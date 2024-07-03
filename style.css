@@ -47,10 +47,15 @@ button:active {
     box-shadow: darkgray 0 0 7px;
 }
 
-input, textarea {
+select, input, textarea {
     padding: .5rem 1rem;
     border-radius: 2rem;
     border: black 1px solid;
+    margin-bottom: 1rem;
+}
+
+select {
+    width: 100%;
 }
 
 textarea {

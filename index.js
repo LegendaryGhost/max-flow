@@ -170,8 +170,9 @@ urlSearchForm.addEventListener('submit', event => {
 linkingForm.addEventListener('submit', event => {
     event.preventDefault();
     const formData = new FormData(event.target);
-    const latency = parseInt(formData.get('latency').toString());
-    network.addConnection(network.selectedServer, toLinkServer, latency);
+    const capacity = parseInt(formData.get('capacity').toString());
+    const orientation = formData.get('orientation').toString();
+    network.addConnection(network.selectedServer, toLinkServer, capacity, orientation);
     network.linkingMode = false;
     linkingForm.reset();
     network.draw(canvas, context);

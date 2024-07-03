@@ -12,12 +12,12 @@ class Network {
             new Server(200, 300, [127, 0, 0, 4], []),
             new Server(400, 300, [127, 0, 0, 5], ['facebook.com'])
         ]
-        this.addConnection(this.servers[0], this.servers[3], 10);
-        this.addConnection(this.servers[0], this.servers[2], 7);
-        this.addConnection(this.servers[0], this.servers[4], 69);
-        this.addConnection(this.servers[1], this.servers[3], 11);
-        this.addConnection(this.servers[3], this.servers[4], 6);
-        this.addConnection(this.servers[2], this.servers[4], 4);
+        this.addConnection(this.servers[0], this.servers[3], 10, 'forward');
+        this.addConnection(this.servers[0], this.servers[2], 7, 'forward');
+        this.addConnection(this.servers[0], this.servers[4], 69, 'forward');
+        this.addConnection(this.servers[1], this.servers[3], 11, 'forward');
+        this.addConnection(this.servers[3], this.servers[4], 6, 'forward');
+        this.addConnection(this.servers[2], this.servers[4], 4, 'forward');
     }
 
     draw(canvas, context, clientX, clientY) {
@@ -58,20 +58,24 @@ class Network {
         context.font = '15px Arial';
         context.fillStyle = 'black';
         context.fillText(
-            connection.latency,
+            connection.capacity,
             x1 + (x2 - x1) / 2 - 15,
             y1 + (y2 - y1) / 2 - 15
         );
 
-        const angle = Math.atan2(y2 - y1, x2 - x1);
-        const triangleX = x2 - Server.radius * Math.cos(angle);
-        const triangleY = y2 - Server.radius * Math.sin(angle);
-        this.drawTriangle(triangleX, triangleY, angle, connectionColor);
+        if(connection.orientation === 'forward' || connection.orientation === 'both') {
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            const triangleX = x2 - Server.radius * Math.cos(angle);
+            const triangleY = y2 - Server.radius * Math.sin(angle);
+            this.drawTriangle(triangleX, triangleY, angle, connectionColor);
+        }
 
-        const angle2 = Math.atan2(y1 - y2, x1 - x2);
-        const triangleX2 = x1 - Server.radius * Math.cos(angle2);
-        const triangleY2 = y1 - Server.radius * Math.sin(angle2);
-        this.drawTriangle(triangleX2, triangleY2, angle2, connectionColor);
+        if(connection.orientation === 'backward' || connection.orientation === 'both') {
+            const angle2 = Math.atan2(y1 - y2, x1 - x2);
+            const triangleX2 = x1 - Server.radius * Math.cos(angle2);
+            const triangleY2 = y1 - Server.radius * Math.sin(angle2);
+            this.drawTriangle(triangleX2, triangleY2, angle2, connectionColor);
+        }
     }
 
     // Draw the arrow
@@ -102,13 +106,13 @@ class Network {
         this.selectedServer = this.selectedServer.getIpString() === deletedIp ? null : this.selectedServer;
     }
 
-    addConnection(server1, server2, latency) {
+    addConnection(server1, server2, capacity, orientation) {
         this.connections = this.connections.filter(
             connection =>
                 !(connection.server1.getIpString() === server1.getIpString() && connection.server2.getIpString() === server2.getIpString()) &&
                 !(connection.server1.getIpString() === server2.getIpString() && connection.server2.getIpString() === server1.getIpString())
         );
-        this.connections.push({server1, server2, latency, highlighted: false, bfsHighlighted: false});
+        this.connections.push(new Connection(server1, server2, capacity, orientation));
         server1.neighbours.push(server2);
         server2.neighbours.push(server1);
     }
@@ -135,7 +139,7 @@ class Network {
                         (connection.server1.ipAddress.join('.') === currentIp && connection.server2.ipAddress.join('.') === neighbourIp) ||
                         (connection.server1.ipAddress.join('.') === neighbourIp && connection.server2.ipAddress.join('.') === currentIp)
                 );
-                const distance = currentServer.distance + connection.latency;
+                const distance = currentServer.distance + connection.capacity;
                 if (!neighbour.colored && !neighbour.disabled && distance < neighbour.distance) {
                     neighbour.distance = distance;
                     neighbour.previous = currentServer;
