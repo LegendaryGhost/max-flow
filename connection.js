@@ -5,11 +5,13 @@ class Connection {
     highlighted;
     bfsHighlighted;
     orientation;
+    flow;
 
-    constructor(server1, server2, capacity, orientation = 'both', highlighted = false, bfsHighlighted = false) {
+    constructor(server1, server2, capacity, flow = 0, orientation = 'both', highlighted = false, bfsHighlighted = false) {
         this.server1 = server1;
         this.server2 = server2;
         this.capacity = capacity;
+        this.flow = flow > capacity ? capacity : flow;
         this.orientation = orientation;
         this.highlighted = highlighted;
         this.bfsHighlighted = bfsHighlighted;

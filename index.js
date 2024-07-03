@@ -171,8 +171,9 @@ linkingForm.addEventListener('submit', event => {
     event.preventDefault();
     const formData = new FormData(event.target);
     const capacity = parseInt(formData.get('capacity').toString());
+    const flow = parseInt(formData.get('flow').toString());
     const orientation = formData.get('orientation').toString();
-    network.addConnection(network.selectedServer, toLinkServer, capacity, orientation);
+    network.addConnection(network.selectedServer, toLinkServer, capacity, flow, orientation);
     network.linkingMode = false;
     linkingForm.reset();
     network.draw(canvas, context);

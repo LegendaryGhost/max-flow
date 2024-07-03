@@ -12,12 +12,12 @@ class Network {
             new Server(200, 300, [127, 0, 0, 4], []),
             new Server(400, 300, [127, 0, 0, 5], ['facebook.com'])
         ]
-        this.addConnection(this.servers[0], this.servers[3], 10, 'forward');
-        this.addConnection(this.servers[0], this.servers[2], 7, 'forward');
-        this.addConnection(this.servers[0], this.servers[4], 69, 'forward');
-        this.addConnection(this.servers[1], this.servers[3], 11, 'forward');
-        this.addConnection(this.servers[3], this.servers[4], 6, 'forward');
-        this.addConnection(this.servers[2], this.servers[4], 4, 'forward');
+        this.addConnection(this.servers[0], this.servers[3], 10, 0, 'forward');
+        this.addConnection(this.servers[0], this.servers[2], 7, 0, 'forward');
+        this.addConnection(this.servers[0], this.servers[4], 69, 0, 'forward');
+        this.addConnection(this.servers[1], this.servers[3], 11, 0, 'forward');
+        this.addConnection(this.servers[3], this.servers[4], 6, 0, 'forward');
+        this.addConnection(this.servers[2], this.servers[4], 4, 0, 'forward');
     }
 
     draw(canvas, context, clientX, clientY) {
@@ -45,6 +45,26 @@ class Network {
         context.stroke(); // Draw the line
     }
 
+    drawString(string, x, y, color = 'black', font = '16px Arial') {
+        context.font = font;
+        context.fillStyle = color;
+        context.fillText(
+            string,
+            x,
+            y
+        );
+    }
+
+    drawTriangle(x, y, angle, color = '#000066', triangleHeight = 20) {
+        context.fillStyle = color;
+        context.beginPath();
+        context.moveTo(x, y);
+        context.lineTo(x - triangleHeight * Math.cos(angle - Math.PI / 6), y - triangleHeight * Math.sin(angle - Math.PI / 6));
+        context.lineTo(x - triangleHeight * Math.cos(angle + Math.PI / 6), y - triangleHeight * Math.sin(angle + Math.PI / 6));
+        context.closePath();
+        context.fill();
+    }
+
     drawConnection(context, connection) {
         const connectionColor = connection.highlighted ? '#00FF00' : (connection.bfsHighlighted ? '#FF0000' : '#000066');
         const x1 = connection.server1.posX;
@@ -54,13 +74,20 @@ class Network {
 
         this.drawLine(context, x1, y1, x2, y2, connectionColor);
 
-        // Draw the weight
-        context.font = '15px Arial';
-        context.fillStyle = 'black';
-        context.fillText(
+        // Draw the capacity
+        this.drawString(
             connection.capacity,
             x1 + (x2 - x1) / 2 - 15,
-            y1 + (y2 - y1) / 2 - 15
+            y1 + (y2 - y1) / 2 - 15,
+            'red'
+        );
+
+        // Draw the flow
+        this.drawString(
+            connection.flow,
+            x1 + (x2 - x1) / 2 + 15,
+            y1 + (y2 - y1) / 2 + 15,
+            '#00FF00'
         );
 
         if(connection.orientation === 'forward' || connection.orientation === 'both') {
@@ -76,18 +103,6 @@ class Network {
             const triangleY2 = y1 - Server.radius * Math.sin(angle2);
             this.drawTriangle(triangleX2, triangleY2, angle2, connectionColor);
         }
-    }
-
-    // Draw the arrow
-    drawTriangle(x, y, angle, color = '#000066', triangleHeight = 20) {
-        // Draw the arrow head
-        context.fillStyle = color;
-        context.beginPath();
-        context.moveTo(x, y);
-        context.lineTo(x - triangleHeight * Math.cos(angle - Math.PI / 6), y - triangleHeight * Math.sin(angle - Math.PI / 6));
-        context.lineTo(x - triangleHeight * Math.cos(angle + Math.PI / 6), y - triangleHeight * Math.sin(angle + Math.PI / 6));
-        context.closePath();
-        context.fill();
     }
 
     addServer(server) {
@@ -106,14 +121,17 @@ class Network {
         this.selectedServer = this.selectedServer.getIpString() === deletedIp ? null : this.selectedServer;
     }
 
-    addConnection(server1, server2, capacity, orientation) {
+    addConnection(server1, server2, capacity, flow, orientation) {
         this.connections = this.connections.filter(
             connection =>
                 !(connection.server1.getIpString() === server1.getIpString() && connection.server2.getIpString() === server2.getIpString()) &&
                 !(connection.server1.getIpString() === server2.getIpString() && connection.server2.getIpString() === server1.getIpString())
         );
-        this.connections.push(new Connection(server1, server2, capacity, orientation));
+        this.connections.push(new Connection(server1, server2, capacity, flow, orientation));
+
+        server1.neighbours = server1.neighbours.filter(server => server.getIpString() !== server2.getIpString());
         server1.neighbours.push(server2);
+        server2.neighbours = server2.neighbours.filter(server => server.getIpString() !== server1.getIpString());
         server2.neighbours.push(server1);
     }
 
