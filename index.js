@@ -14,6 +14,7 @@ let toLinkServer = null,
     diffY = 0,
     dragging = false;
 
+/** Functions **/
 const getCanvasRelativeCoordinate = (absolute_x, absolute_y) => {
     const canvasRect = canvas.getBoundingClientRect();
     const x = absolute_x - canvasRect.left;

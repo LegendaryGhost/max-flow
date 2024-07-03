@@ -21,44 +21,70 @@ class Network {
     }
 
     draw(canvas, context, clientX, clientY) {
-        context.fillStyle = "grey"; // Set the fill color to blue
+        context.fillStyle = "grey"; // Set the fill color to grey
         context.fillRect(0, 0, canvas.width, canvas.height);
 
         if (this.linkingMode) {
-            context.strokeStyle = '#FFFFFF';
-            context.lineWidth = 5; // Stroke width
-            context.beginPath(); // Reset the current path
-            context.moveTo(this.selectedServer.posX, this.selectedServer.posY); // Starting point
-            context.lineTo(clientX, clientY); // Ending point
-            context.stroke(); // Draw the line
+            this.drawLine(context, this.selectedServer.posX, this.selectedServer.posY, clientX, clientY, '#FFFFFF');
         }
 
         context.lineWidth = 5; // Stroke width
         for (const connection of this.connections) {
-            context.strokeStyle = connection.highlighted ? '#00FF00' : (connection.bfsHighlighted ? '#FF0000' : '#000066');
-            const x1 = connection.server1.posX;
-            const y1 = connection.server1.posY;
-            const x2 = connection.server2.posX;
-            const y2 = connection.server2.posY;
-            context.beginPath(); // Reset the current path
-            context.moveTo(x1, y1); // Starting point
-            context.lineTo(x2, y2); // Ending point
-            context.stroke(); // Draw the line
-
-            // Set the font properties
-            context.font = '15px Arial';
-            context.fillStyle = 'black';
-
-            // Draw the text
-            context.fillText(
-                connection.latency,
-                x1 + (x2 - x1) / 2 - 15,
-                y1 + (y2 - y1) / 2 - 15
-            );
+            this.drawConnection(context, connection);
         }
 
         this.servers.forEach(server => server.draw(context));
-    };
+    }
+
+    drawLine(context, x1, y1, x2, y2, color = '#000066') {
+        context.strokeStyle = color;
+        context.lineWidth = 5; // Stroke width
+        context.beginPath(); // Reset the current path
+        context.moveTo(x1, y1); // Starting point
+        context.lineTo(x2, y2); // Ending point
+        context.stroke(); // Draw the line
+    }
+
+    drawConnection(context, connection) {
+        const connectionColor = connection.highlighted ? '#00FF00' : (connection.bfsHighlighted ? '#FF0000' : '#000066');
+        const x1 = connection.server1.posX;
+        const y1 = connection.server1.posY;
+        const x2 = connection.server2.posX;
+        const y2 = connection.server2.posY;
+
+        this.drawLine(context, x1, y1, x2, y2, connectionColor);
+
+        // Draw the weight
+        context.font = '15px Arial';
+        context.fillStyle = 'black';
+        context.fillText(
+            connection.latency,
+            x1 + (x2 - x1) / 2 - 15,
+            y1 + (y2 - y1) / 2 - 15
+        );
+
+        const angle = Math.atan2(y2 - y1, x2 - x1);
+        const triangleX = x2 - Server.radius * Math.cos(angle);
+        const triangleY = y2 - Server.radius * Math.sin(angle);
+        this.drawTriangle(triangleX, triangleY, angle, connectionColor);
+
+        const angle2 = Math.atan2(y1 - y2, x1 - x2);
+        const triangleX2 = x1 - Server.radius * Math.cos(angle2);
+        const triangleY2 = y1 - Server.radius * Math.sin(angle2);
+        this.drawTriangle(triangleX2, triangleY2, angle2, connectionColor);
+    }
+
+    // Draw the arrow
+    drawTriangle(x, y, angle, color = '#000066', triangleHeight = 20) {
+        // Draw the arrow head
+        context.fillStyle = color;
+        context.beginPath();
+        context.moveTo(x, y);
+        context.lineTo(x - triangleHeight * Math.cos(angle - Math.PI / 6), y - triangleHeight * Math.sin(angle - Math.PI / 6));
+        context.lineTo(x - triangleHeight * Math.cos(angle + Math.PI / 6), y - triangleHeight * Math.sin(angle + Math.PI / 6));
+        context.closePath();
+        context.fill();
+    }
 
     addServer(server) {
         this.servers.push(server);
@@ -82,7 +108,7 @@ class Network {
                 !(connection.server1.getIpString() === server1.getIpString() && connection.server2.getIpString() === server2.getIpString()) &&
                 !(connection.server1.getIpString() === server2.getIpString() && connection.server2.getIpString() === server1.getIpString())
         );
-        this.connections.push({ server1, server2, latency, highlighted: false, bfsHighlighted: false });
+        this.connections.push({server1, server2, latency, highlighted: false, bfsHighlighted: false});
         server1.neighbours.push(server2);
         server2.neighbours.push(server1);
     }
@@ -110,7 +136,7 @@ class Network {
                         (connection.server1.ipAddress.join('.') === neighbourIp && connection.server2.ipAddress.join('.') === currentIp)
                 );
                 const distance = currentServer.distance + connection.latency;
-                if(!neighbour.colored && !neighbour.disabled && distance < neighbour.distance) {
+                if (!neighbour.colored && !neighbour.disabled && distance < neighbour.distance) {
                     neighbour.distance = distance;
                     neighbour.previous = currentServer;
                 }
@@ -121,7 +147,7 @@ class Network {
                 if (!server.colored && !server.disabled) {
                     if (!currentServer) {
                         currentServer = server;
-                    } else if(server.distance < currentServer.distance) {
+                    } else if (server.distance < currentServer.distance) {
                         currentServer = server;
                     }
                 }
@@ -147,11 +173,11 @@ class Network {
             server.previous = null;
         });
         senderServer.colored = true;
-        let queue = [ senderServer ];
+        let queue = [senderServer];
 
         while (queue.length !== 0) {
             const currentServer = queue.shift();
-            for(const neighbour of currentServer.neighbours) {
+            for (const neighbour of currentServer.neighbours) {
                 if (!neighbour.colored && !neighbour.disabled) {
                     neighbour.colored = true;
                     neighbour.previous = currentServer;
@@ -167,7 +193,7 @@ class Network {
             previous = previous.previous;
         }
 
-        if(shortestPath.length === 0 && senderIp !== receiverIp) {
+        if (shortestPath.length === 0 && senderIp !== receiverIp) {
             return []
         }
 
